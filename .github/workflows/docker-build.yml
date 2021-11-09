@@ -8,6 +8,10 @@ on:
   watch:
     types: [started]
 
+env:
+  PRODUCT_TAG: adams549659584/darkhttpd:latest
+  TEST_TAG: docker/image:test
+
 jobs:
   dockerhub:
     if: github.event.repository.owner.id == github.event.sender.id
@@ -25,11 +29,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
+      
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          load: true
+          tags: ${{ env.TEST_TAG }}
+      
+      - name: Test Docker Image
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}    
+          
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: adams549659584/darkhttpd:latest
-          run: |
-            echo "test test test test"
+          tags: ${{ env.PRODUCT_TAG }}
