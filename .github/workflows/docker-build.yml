@@ -31,3 +31,12 @@ jobs:
         with:
           push: true
           tags: adams549659584/darkhttpd:latest
+          run: |
+            echo "$PWD"
+
+      - name: Upload firmware directory
+        uses: actions/upload-artifact@master
+        if: steps.organize.outputs.status == 'success' && !cancelled()
+        with:
+          name: darkhttpd
+          path: $PWD
