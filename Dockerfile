@@ -7,7 +7,7 @@ RUN make darkhttpd-static \
  && strip darkhttpd-static
 
 # Just the static binary
-FROM scratch
+FROM alpine
 WORKDIR /var/www/htdocs
 COPY --from=build /src/darkhttpd-static /darkhttpd
 EXPOSE 80
