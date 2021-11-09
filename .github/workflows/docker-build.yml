@@ -31,3 +31,5 @@ jobs:
         with:
           push: true
           tags: adams549659584/darkhttpd:latest
+          run: |
+            echo "test test test test"
