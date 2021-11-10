@@ -8,6 +8,9 @@ RUN make darkhttpd-static \
 
 # Just the static binary
 FROM alpine
+
+RUN apk --update add bash
+
 WORKDIR /var/www/htdocs
 COPY --from=build /src/darkhttpd-static /darkhttpd
 EXPOSE 80

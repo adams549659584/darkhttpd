@@ -9,8 +9,7 @@ on:
     types: [started]
 
 env:
-  PRODUCT_TAG: adams549659584/darkhttpd:latest
-  TEST_TAG: docker/image:test
+  PRODUCT_TAG: adams549659584/darkhttpd:1.0.0
 
 jobs:
   dockerhub:
