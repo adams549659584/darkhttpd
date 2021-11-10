@@ -1,0 +1,33 @@
+name: Build Release
+
+on:
+  push:
+    branches:
+      - master
+  
+  watch:
+    types: [started]
+
+env:
+  PRODUCT_TAG: adams549659584/darkhttpd:latest
+
+jobs:
+  dockerhub:
+    if: github.event.repository.owner.id == github.event.sender.id
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+
+    - name: Build Release
+      run: |
+        make darkhttpd-static
+        strip darkhttpd-static
+
+    - name: Upload bin directory
+      uses: actions/upload-artifact@master
+      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+      with:
+        name: release
+        path: darkhttpd-static
