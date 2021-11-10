@@ -9,7 +9,7 @@ on:
     types: [started]
 
 env:
-  PRODUCT_TAG: adams549659584/darkhttpd:latest
+  UPLOAD_BIN_DIR: true
 
 jobs:
   dockerhub:
