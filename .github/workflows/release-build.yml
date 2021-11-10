@@ -19,11 +19,11 @@ jobs:
 
     - name: Build Release
       run: |
-        make darkhttpd-static
-        strip darkhttpd-static
+        make darkhttpd
+        strip darkhttpd
 
     - name: Upload bin directory
       uses: actions/upload-artifact@master
       with:
         name: release
-        path: darkhttpd-static
+        path: darkhttpd
