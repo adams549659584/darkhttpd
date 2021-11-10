@@ -8,9 +8,6 @@ on:
   watch:
     types: [started]
 
-env:
-  UPLOAD_BIN_DIR: true
-
 jobs:
   buildRelease:
     if: github.event.repository.owner.id == github.event.sender.id
@@ -27,7 +24,6 @@ jobs:
 
     - name: Upload bin directory
       uses: actions/upload-artifact@master
-      if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
       with:
         name: release
         path: darkhttpd-static
