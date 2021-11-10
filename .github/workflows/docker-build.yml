@@ -12,7 +12,7 @@ env:
   PRODUCT_TAG: adams549659584/darkhttpd:latest
 
 jobs:
-  dockerhub:
+  buildDockerImage:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
 

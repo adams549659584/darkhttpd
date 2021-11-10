@@ -12,7 +12,7 @@ env:
   UPLOAD_BIN_DIR: true
 
 jobs:
-  dockerhub:
+  buildRelease:
     if: github.event.repository.owner.id == github.event.sender.id
     runs-on: ubuntu-latest
 
