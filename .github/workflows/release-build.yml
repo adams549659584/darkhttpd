@@ -21,6 +21,7 @@ jobs:
       run: |
         make darkhttpd
         strip darkhttpd
+        ls -alh
 
     - name: Upload bin directory
       uses: actions/upload-artifact@master
