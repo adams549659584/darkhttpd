@@ -19,6 +19,7 @@ jobs:
 
     - name: Build Release
       run: |
+        ls -alh
         make darkhttpd
         strip darkhttpd
         ls -alh
