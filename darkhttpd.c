@@ -1600,7 +1600,7 @@ static void redirect(struct connection *conn, const char *format, ...) {
 
 /* Parses a single HTTP request field.  Returns string from end of [field] to
  * first \r, \n or end of request string.  Returns NULL if [field] can't be
- * matched.
+ * matched.  Case insensitive.
  *
  * You need to remember to deallocate the result.
  * example: parse_field(conn, "Referer: ");
@@ -1610,7 +1610,7 @@ static char *parse_field(const struct connection *conn, const char *field) {
     char *pos;
 
     /* find start */
-    pos = strstr(conn->request, field);
+    pos = strcasestr(conn->request, field);
     if (pos == NULL)
         return NULL;
     assert(pos >= conn->request);
@@ -1817,6 +1817,9 @@ struct dlent {
 };
 
 static int dlent_cmp(const void *a, const void *b) {
+    if (strcmp((*((const struct dlent * const *)a))->name, "..") == 0) {
+        return -1;  /* Special-case ".." to come first. */
+    }
     return strcmp((*((const struct dlent * const *)a))->name,
                   (*((const struct dlent * const *)b))->name);
 }
@@ -1843,7 +1846,7 @@ static ssize_t make_sorted_dirlist(const char *path, struct dlent ***output) {
     while ((ent = readdir(dir)) != NULL) {
         struct stat s;
 
-        if ((ent->d_name[0] == '.') && (ent->d_name[1] == '\0'))
+        if (strcmp(ent->d_name, ".") == 0)
             continue; /* skip "." */
         assert(strlen(ent->d_name) <= MAXNAMLEN);
         sprintf(currname, "%s%s", path, ent->d_name);
@@ -1984,6 +1987,8 @@ static void generate_dir_listing(struct connection *conn, const char *path,
 
         append(listing, "<a href=\"");
         append(listing, safe_url);
+        if (list[i]->is_dir)
+            append(listing, "/");
         append(listing, "\">");
         append_escaped(listing, list[i]->name);
         append(listing, "</a>");
