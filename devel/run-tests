@@ -120,6 +120,22 @@ runtests() {
   kill $PID
   wait $PID
 
+  echo "===> run --header tests"
+  # Wrong flags:
+  ./a.out . --header >/dev/null 2>/dev/null
+  ./a.out . --header missing_colon >/dev/null 2>/dev/null
+  ./a.out . --header $'X-Header: Abusive\r\n\r\nBody' >/dev/null 2>/dev/null
+  # Correct flags:
+  ./a.out $DIR --port $PORT \
+    --header 'X-Header-A: First Value' --header 'X-Header-B: Second Value' \
+    --forward example.com http://www.example.com \
+    >>test.out.stdout 2>>test.out.stderr &
+  PID=$!
+  kill -0 $PID || exit 1
+  python3 test_custom_headers.py
+  kill $PID
+  wait $PID
+
   echo "===> run --forward-https tests"
   ./a.out $DIR --port $PORT --forward-https \
     >>test.out.stdout 2>>test.out.stderr &
@@ -158,22 +174,23 @@ $CC -O2 -Wall -DNO_IPV6 ../darkhttpd.c || exit 1
 # -fsanitize=address produces stderr and crashes.
 # -fsanitize=memory produces stderr and crashes.
 
-# msan first.
-if ! $CLANG -v 2>/dev/null; then
-  echo "***WARNING*** Can't find clang."
-  echo "Skipping memory sanitizer. Try setting the \$CLANG env var."
-else
-  echo "===> building a.out for msan"
-  $CLANG -g -O2 -fsanitize=memory -DDEBUG -DAPBUF_INIT=1 \
-    ../darkhttpd.c || exit 1
-  (runtests) || {
-    echo "FAILED! stderr was:"
-    echo "---"
-    cat test.out.stderr
-    echo "---"
-    exit 1
-  }
-fi
+# msan disabled due to issues with dlent.
+## # msan first.
+## if ! $CLANG -v 2>/dev/null; then
+##   echo "***WARNING*** Can't find clang."
+##   echo "Skipping memory sanitizer. Try setting the \$CLANG env var."
+## else
+##   echo "===> building a.out for msan"
+##   $CLANG -g -O2 -fsanitize=memory -DDEBUG -DAPBUF_INIT=1 \
+##     ../darkhttpd.c || exit 1
+##   (runtests) || {
+##     echo "FAILED! stderr was:"
+##     echo "---"
+##     cat test.out.stderr
+##     echo "---"
+##     exit 1
+##   }
+## fi
 
 # asan and coverage next.
 echo "===> building a.out and darkhttpd.gcno for coverage + asan + ubsan"
